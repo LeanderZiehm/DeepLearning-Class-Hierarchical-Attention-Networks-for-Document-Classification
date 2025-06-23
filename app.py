@@ -9,8 +9,6 @@ import pickle
 
 app = Flask(__name__)
 
-
-
 def load_model_and_vocab():
     global model, word2idx
     model = HierarchicalAttentionNetwork(
@@ -24,7 +22,7 @@ def load_model_and_vocab():
         sentence_attention_dimmention=100,
         number_of_classes=2,
     )
-    ckpt = torch.load("best_han_model.pth", map_location="cpu", weights_only=False)
+    ckpt = torch.load("files/best_han_model.pth", map_location="cpu", weights_only=False)
     fixed_sd = {}
     for k, v in ckpt["model_state_dict"].items():
         new_k = (
@@ -36,7 +34,7 @@ def load_model_and_vocab():
     model.load_state_dict(fixed_sd)
     model.eval()
 
-    with open("vocabulary.pkl", "rb") as f:
+    with open("files/vocabulary.pkl", "rb") as f:
         word2idx = pickle.load(f)["word_to_idx"]
 
     return model, word2idx

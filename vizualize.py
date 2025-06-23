@@ -72,8 +72,8 @@ def text2numbers(text):
 
 
 
-def load_word2idx(vocab_path="vocabulary.pkl"):
-    with open("vocabulary.pkl", "rb") as f:
+def load_word2idx(vocab_path="files/vocabulary.pkl"):
+    with open(vocab_path, "rb") as f:
         vocab = pickle.load(f)
         word2idx = vocab['word_to_idx']  # Ensure you're accessing the correct dictionary
     return word2idx

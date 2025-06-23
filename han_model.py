@@ -433,7 +433,7 @@ def trainset_han_model(model, trainset_loader, validationset_loader, number_of_e
         # Save best model
         if validationset_accuracy > highest_validation_accuracy:
             highest_validation_accuracy = validationset_accuracy
-            torch.save(model.state_dict(), "best_han_model.pth")
+            torch.save(model.state_dict(), "files/best_han_model.pth")
 
     print(f"Best validation accuracy: {highest_validation_accuracy:.4f}")
 
