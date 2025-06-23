@@ -11,9 +11,15 @@ def main():
     text = "Hello world! This is an example sentence. Another sentence follows."
     
     model = load_model()
-    
     prediction = predict(text,model)
     print(f"Prediction: {prediction}")
+
+def predict(text, model):
+    tokenized, numericalized = text2numbers(text)  # Fix: Unpack both values
+    word_attn, sent_attn = calc_attention(numericalized, model)  # Fix: Pass numericalized instead of text
+    # Do something meaningful here — this is just a placeholder
+    predicted_class = torch.argmax(torch.tensor(sent_attn)).item()
+    return predicted_class
 
 
 def load_model():
@@ -43,6 +49,7 @@ def load_model():
         fixed_sd[new_k] = v
     model.load_state_dict(fixed_sd)
     model.eval()
+    return model
 
 
 def text2numbers(text):
@@ -87,19 +94,6 @@ def calc_attention(numericalized,model):
     sent_attn = sent_attn.squeeze(0).cpu().numpy()
 
     return word_attn,sent_attn
-
-
-
-
-def predict(text,model):
-
-    numericalized = text2numbers(text)
-    word_attn,sent_attn = calc_attention(text,model)
-
-    return "todo implement this"
-
-
-
 
 
 if __name__ == "__main__":
