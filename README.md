@@ -29,6 +29,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ~~~
 
+# install toruch for gpu:
+```
+pip install torch
+```
+cpu:
+```
+pip install torch --index-url https://download.pytorch.org/whl/cpu --no-cache-dir
+```
   
 
 ### 2 · Run the training / validation pipeline
