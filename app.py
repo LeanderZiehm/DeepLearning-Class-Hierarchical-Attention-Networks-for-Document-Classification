@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, jsonify
-from src.han_model import (
-    create_padding_for_hierarchical_sequences,
-    HierarchicalAttentionNetwork,
-)
 import torch
 import re
 import pickle
+from flask import Flask, render_template, request, jsonify
+from han_model import (
+    create_padding_for_hierarchical_sequences,
+    HierarchicalAttentionNetwork,
+)
+
 
 app = Flask(__name__)
 

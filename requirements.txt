@@ -1,8 +1,4 @@
-kagglehub
-tqdm
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
+flask
 torch
+scikit-learn
+
