@@ -2,7 +2,7 @@ import sklearn.preprocessing._label as _l
 
 import torch
 
-from torch.serialization import add_safe_globals
+# from torch.serialization import add_safe_globals
 
 from main.han_model import HierarchicalAttentionNetwork
 
@@ -34,7 +34,7 @@ def load_trained_model(model_path,device=None):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load checkpoint
-    add_safe_globals([_l.LabelEncoder])
+    # add_safe_globals([_l.LabelEncoder])
     checkpoint = torch.load(model_path, map_location=device, weights_only=False)
 
 
