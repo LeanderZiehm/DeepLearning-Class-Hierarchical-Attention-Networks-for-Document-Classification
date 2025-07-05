@@ -7,7 +7,6 @@ from han_model import (
     HierarchicalAttentionNetwork,
 )
 
-
 app = Flask(__name__)
 
 def load_model_and_vocab():
@@ -40,7 +39,6 @@ def load_model_and_vocab():
 
     return model, word2idx
 
-
 def preprocess_text(text):
     sentences = re.split(r'[.!?]', text)
     sentences = [s.strip() for s in sentences if s.strip()]
@@ -51,11 +49,9 @@ def preprocess_text(text):
     ]
     return tokenized, numericalized
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -86,9 +82,6 @@ def predict():
         data["sentences"].append({"words": word_data})
 
     return jsonify(data)
-
-
-
 
 if __name__ == "__main__":
     # Load once at startup
