@@ -1,0 +1,4 @@
+data/Fake.csv
+*.csv
+*.pth
+*.pkl
