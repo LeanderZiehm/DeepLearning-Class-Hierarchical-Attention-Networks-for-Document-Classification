@@ -16,6 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import datetime
+import csv
 
 
 # Download required NLTK data
@@ -931,11 +932,13 @@ class FakeNewsAnalyzer:
         self.collect_misclassified_samples(test_loader, datasets[2], output_path="misclassified_samples.csv")
 
 
-# Initialize analyzer
-analyzer = FakeNewsAnalyzer()
+if __name__ == "__main__":
 
-# Run complete analysis
-results = analyzer.run_complete_analysis()
+    # Initialize analyzer
+    analyzer = FakeNewsAnalyzer()
 
-print("\nRESULTS\n")
-print(results)
+    # Run complete analysis
+    results = analyzer.run_complete_analysis()
+
+    print("\nRESULTS\n")
+    print(results)
