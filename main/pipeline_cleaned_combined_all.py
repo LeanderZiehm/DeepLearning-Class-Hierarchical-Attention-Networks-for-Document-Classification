@@ -899,8 +899,7 @@ class FakeNewsAnalyzer:
             "training_results": self.training_results,
             "model_config": trainer.model_config,  # <-- Required to reinit model
             "MAX_WORDS_PER_SENTENCE": MAX_WORDS_PER_SENTENCE,
-            "MAX_SENTENCES": MAX_SENTENCES,
-            "highest_validation_accuracy": self.training_results["best_val_accuracy"],  # Optional
+            "MAX_SENTENCES": MAX_SENTENCES
         }
 
         checkpoint = torch.load(MODEL_SAVE_PATH, weights_only=False)
