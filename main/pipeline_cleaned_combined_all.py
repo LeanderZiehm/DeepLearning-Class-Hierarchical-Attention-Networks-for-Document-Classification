@@ -12,12 +12,19 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from collections import Counter
 import re
 import pickle
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import datetime
+
+
+# Download required NLTK data
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
+
+
 
 current_date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 # CONFIGURATION CONSTANTS
@@ -436,14 +443,6 @@ if __name__ == "__main__":
     print("\nHierarchical Attention Network implementation complete")
 
 
-
-# Download required NLTK data
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
-
-
 class TextPreprocessor:
     """Text preprocessing utilities for hierarchical document structure."""
 
@@ -507,6 +506,33 @@ class TextPreprocessor:
 
         self.vocabulary_size = len(self.word_to_idx)
         print(f"Vocabulary size: {self.vocabulary_size}")
+
+    def text_to_hierarchical_indices(
+        self, text, max_sentences=20, max_words_per_sentence=50
+    ):
+        """Convert text to hierarchical structure of word indices."""
+        cleaned_text = self.clean_text(text)
+        sentences = sent_tokenize(cleaned_text)
+
+        # Limit number of sentences
+        sentences = sentences[:max_sentences]
+
+        hierarchical_doc = []
+        for sentence in sentences:
+            words = word_tokenize(sentence)
+            # Limit words per sentence
+            words = words[:max_words_per_sentence]
+
+            # Convert words to indices
+            word_indices = []
+            for word in words:
+                idx = self.word_to_idx.get(word, 1)  # 1 is <UNK>
+                word_indices.append(idx)
+
+            if word_indices:  # Only add non-empty sentences
+                hierarchical_doc.append(word_indices)
+
+        return hierarchical_doc if hierarchical_doc else [[1]]  # Return <UNK> if empty
 
 
     def save_vocabulary(self, filepath):
