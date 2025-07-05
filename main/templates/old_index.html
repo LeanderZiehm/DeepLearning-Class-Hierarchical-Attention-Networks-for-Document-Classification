@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HAN Attention Visualizer</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        margin: 0;
+        padding: 60px 20px;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h2, h3 {
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    form {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        width: 100%;
+        max-width: 700px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        resize: vertical;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        background-color: #fdfdfd;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        font-size: 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .sentence {
+        margin-bottom: 20px;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .word {
+        display: inline-block;
+        margin: 3px 5px;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 15px;
+        transition: background-color 0.2s ease;
+        color: #000;
+    }
+
+    #results {
+        padding-top: 20px;
+        width: 100%;
+        max-width: 700px;
+    }
+
+    #prediction {
+        font-weight: bold;
+        color: #34495e;
+        text-align: center;
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+
+</head>
+<body>
+    <h2>Hierarchical Attention Network Visualizer</h2>
+    <form id="text-form">
+        <textarea name="text" rows="5" cols="60" placeholder="Enter your text..."></textarea><br>
+        <button type="submit">Analyze</button>
+    </form>
+
+    <h3>Prediction: <span id="prediction"></span></h3>
+    <div id="results"></div>
+
+    <script>
+        function attentionColor(attn) {
+            let intensity = Math.round(attn * 255);
+            return `rgba(255, 0, 0, ${attn})`;
+        }
+
+        document.getElementById("text-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            document.getElementById("prediction").textContent = data.prediction;
+
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            data.sentences.forEach((sentence, idx) => {
+                const sentDiv = document.createElement("div");
+                sentDiv.className = "sentence";
+                sentence.words.forEach(w => {
+                    const wordSpan = document.createElement("span");
+                    wordSpan.className = "word";
+                    wordSpan.textContent = w.word;
+                    wordSpan.style.backgroundColor = attentionColor(w.attention);
+                    sentDiv.appendChild(wordSpan);
+                });
+                resultsDiv.appendChild(sentDiv);
+            });
+        });
+    </script>
+</body>
+</html>

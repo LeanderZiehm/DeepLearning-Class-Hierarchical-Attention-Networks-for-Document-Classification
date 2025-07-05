@@ -1,53 +1,29 @@
-import torch
-import re
+import os
 import pickle
-from flask import Flask, render_template, request, jsonify
-from han_model import (
-    create_padding_for_hierarchical_sequences,
-    HierarchicalAttentionNetwork,
-)
+import torch
+from flask import Flask, request, jsonify, render_template
+from nltk.tokenize import sent_tokenize, word_tokenize
+from pipeline_all import TextPreprocessor, HierarchicalAttentionNetwork
+from pipeline_all import create_padding_for_hierarchical_sequences
 
 app = Flask(__name__)
 
-def load_model_and_vocab():
-    global model, word2idx
-    model = HierarchicalAttentionNetwork(
-        vocabulary_size=50000,
-        embedding_dimmentions=200,
-        word_gru_hidden_units=50,
-        word_gru_layers=1,
-        word_attention_dimmentions=100,
-        sentence_gru_hidden_units=50,
-        sentence_gru_layers=1,
-        sentence_attention_dimmention=100,
-        number_of_classes=2,
-    )
-    ckpt = torch.load("files/best_han_model.pth", map_location="cpu", weights_only=False)
-    fixed_sd = {}
-    for k, v in ckpt["model_state_dict"].items():
-        new_k = (
-            k.replace("sentence_attention.sent_gru", "sentence_attention.sentence_gru")
-            .replace("sentence_attention.sent_attention", "sentence_attention.sentence_attention")
-            .replace("sentence_attention.sent_context_vector", "sentence_attention.sentence_context_vector")
-        )
-        fixed_sd[new_k] = v
-    model.load_state_dict(fixed_sd)
-    model.eval()
+MODEL_SAVE_PATH = "files/han_model2025-07-06_01-13-47.pth"
+VOCAB_PATH = "files/vocabulary_2025-07-06_01-13-47.pkl"
 
-    with open("files/vocabulary.pkl", "rb") as f:
-        word2idx = pickle.load(f)["word_to_idx"]
+# Load model & vocab
+checkpoint = torch.load(MODEL_SAVE_PATH, map_location=torch.device('cpu'),weights_only=False)
+model_config = checkpoint['model_config']
+model = HierarchicalAttentionNetwork(**model_config)
+model.load_state_dict(checkpoint['model_state_dict'])
+model.eval()
 
-    return model, word2idx
+with open(VOCAB_PATH, "rb") as f:
+    vocab_data = pickle.load(f)
 
-def preprocess_text(text):
-    sentences = re.split(r'[.!?]', text)
-    sentences = [s.strip() for s in sentences if s.strip()]
-    tokenized = [s.split() for s in sentences]
-    numericalized = [
-        [word2idx.get(w.lower(), word2idx.get("<UNK>", 0)) for w in sent]
-        for sent in tokenized
-    ]
-    return tokenized, numericalized
+word_to_idx = vocab_data['word_to_idx']
+preprocessor = TextPreprocessor()
+preprocessor.word_to_idx = word_to_idx
 
 @app.route("/")
 def index():
@@ -55,35 +31,65 @@ def index():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    text = request.form["text"]
-    tokenized, numericalized = preprocess_text(text)
+    data = request.get_json()
+    input_text = data.get("text", "")
 
-    docs, word_lens, sent_lens = create_padding_for_hierarchical_sequences([numericalized])
-    docs = torch.LongTensor(docs)
-    word_lens = torch.LongTensor(word_lens)
-    sent_lens = torch.LongTensor(sent_lens)
+    cleaned_text = preprocessor.clean_text(input_text)
+    sentences = sent_tokenize(cleaned_text)[:20]
+
+    hierarchical_doc = []
+    original_words = []
+
+    for sentence in sentences:
+        words = word_tokenize(sentence)[:50]
+        original_words.append(words)
+        word_indices = [preprocessor.word_to_idx.get(word, 1) for word in words]
+        hierarchical_doc.append(word_indices)
+
+    padded_docs, word_lengths, sentence_lengths = create_padding_for_hierarchical_sequences([hierarchical_doc])
 
     with torch.no_grad():
-        logits, word_attn, sent_attn = model(docs, word_lens, sent_lens)
+        docs_tensor = torch.tensor(padded_docs, dtype=torch.long)
+        word_lengths_tensor = torch.tensor(word_lengths, dtype=torch.long)
+        sentence_lengths_tensor = torch.tensor(sentence_lengths, dtype=torch.long)
+        logits, word_attentions, sentence_attentions = model(docs_tensor, word_lengths_tensor, sentence_lengths_tensor)
 
     prediction = torch.argmax(logits, dim=1).item()
 
-    word_attn = word_attn.squeeze(0).cpu().tolist()
-    sent_attn = sent_attn.squeeze(0).cpu().tolist()
+    # Normalize attentions
+    sentence_attentions = sentence_attentions[0].tolist()
+    word_attentions = [att.tolist() for att in word_attentions[0]]  # list of word-level attentions
 
-    data = {
+    response = {
         "prediction": prediction,
-        "sentence_attention": sent_attn,
-        "sentences": []
+        "sentences": original_words,
+        "sentence_attentions": sentence_attentions,
+        "word_attentions": word_attentions
     }
 
-    for i, (sentence, attention) in enumerate(zip(tokenized, word_attn)):
-        word_data = [{"word": w, "attention": a} for w, a in zip(sentence, attention)]
-        data["sentences"].append({"words": word_data})
+    return jsonify(response)
 
-    return jsonify(data)
+
+import json
+
+@app.route("/samples")
+def get_sample_texts():
+    with open("files/sample_texts.json", "r") as f:
+        samples = json.load(f)
+    return jsonify(samples)
+
+@app.route("/tag", methods=["POST"])
+def tag_text():
+    data = request.get_json()
+    text_id = data.get("id")
+    tag = data.get("tag")
+
+    # Optional: Save to a local file
+    with open("tagged_data.json", "a") as f:
+        f.write(json.dumps({"id": text_id, "tag": tag}) + "\n")
+
+    return jsonify({"message": "Tag saved", "id": text_id, "tag": tag})
+
 
 if __name__ == "__main__":
-    # Load once at startup
-    model, word2idx = load_model_and_vocab()
     app.run(debug=True)

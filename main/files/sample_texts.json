@@ -1,0 +1,13 @@
+[
+  {
+    "text": "WASHINGTON - Republican Ted Cruz on Friday den...",
+    "actual_label": "true",
+    "predicted_label": "fake"
+  },
+  {
+    "text": "Neil Gorsuch, President Donald Trump’s appoint...",
+    "actual_label": "true",
+    "predicted_label": "fake"
+  },
+  ...
+]

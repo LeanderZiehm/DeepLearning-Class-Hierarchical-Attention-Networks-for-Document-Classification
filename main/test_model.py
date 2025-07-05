@@ -45,6 +45,7 @@ def main():
     model, word_to_idx = load_model_and_vocab()
     preprocessor = TextPreprocessor()
     preprocessor.word_to_idx = word_to_idx  # Set the loaded vocabulary
+    # print(f"word_to_idx: {preprocessor.word_to_idx}")
 
     while True:
         input_text = input("Enter a news article (or 'exit' to quit): ")
@@ -61,6 +62,7 @@ def main():
             logits, _, _ = model(docs_tensor, word_lengths_tensor, sentence_lengths_tensor)
         
         predictions = torch.argmax(logits, dim=1)
+        print(f"logits: {logits}")
         print(f"Predicted label: {predictions.item()}")
 
 if __name__ == "__main__":
