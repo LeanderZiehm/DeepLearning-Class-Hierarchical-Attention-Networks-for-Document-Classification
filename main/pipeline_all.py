@@ -536,6 +536,8 @@ class FakeNewsDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.hierarchical_docs[idx], self.labels[idx]
+    
+    
 
 
 def create_padding_for_hierarchical_sequences(
@@ -796,6 +798,46 @@ class FakeNewsAnalyzer:
         print(
             f"Label mapping: {dict(zip(self.label_encoder.classes_, self.label_encoder.transform(self.label_encoder.classes_)))}"
         )
+        
+    def collect_misclassified_samples(self, dataloader, dataset, output_path="misclassified_samples.csv"):
+        self.model.eval()
+        misclassified = []
+        device = next(self.model.parameters()).device
+
+        with torch.no_grad():
+            for i, batch in enumerate(dataloader):
+                docs, word_lengths, sentence_lengths, labels = batch
+                docs = docs.to(device)
+                word_lengths = word_lengths.to(device)
+                sentence_lengths = sentence_lengths.to(device)
+                labels = labels.to(device)
+
+                logits, _, _ = self.model(docs, word_lengths, sentence_lengths)
+                preds = torch.argmax(logits, dim=1)
+
+                # Find misclassified indices in the batch
+                for j in range(len(labels)):
+                    if preds[j].item() != labels[j].item():
+                        # Get original index in dataset
+                        dataset_idx = i * dataloader.batch_size + j
+                        if dataset_idx < len(dataset):
+                            text = dataset.texts[dataset_idx]
+                            actual = self.label_encoder.inverse_transform([labels[j].item()])[0]
+                            predicted = self.label_encoder.inverse_transform([preds[j].item()])[0]
+                            misclassified.append({
+                                "text": text,
+                                "actual_label": actual,
+                                "predicted_label": predicted
+                            })
+
+        # Save to CSV
+        with open(output_path, "w", newline='', encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=["text", "actual_label", "predicted_label"])
+            writer.writeheader()
+            for row in misclassified:
+                writer.writerow(row)
+        print(f"Saved {len(misclassified)} misclassified samples to {output_path}")
+        return misclassified
 
     def create_datasets_and_loaders(self, data_splits=None):
         print("Creating datasets and data loaders")
@@ -885,6 +927,8 @@ class FakeNewsAnalyzer:
         # 2. Data loaders
         datasets, (trainset_loader, validationset_loader, test_loader) = (self.create_datasets_and_loaders())
         trainer = self.trainset_model(trainset_loader, validationset_loader)
+        
+        self.collect_misclassified_samples(test_loader, datasets[2], output_path="misclassified_samples.csv")
 
 
 # Initialize analyzer
