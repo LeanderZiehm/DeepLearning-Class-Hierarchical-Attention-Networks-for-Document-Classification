@@ -1,5 +1,5 @@
 import torch
-from torch.serialization import add_safe_globals
+# from torch.serialization import add_safe_globals
 import sklearn.preprocessing._label as _l
 from tqdm import tqdm
 
@@ -183,7 +183,7 @@ def load_trained_model(model_path="best_han_model.pth", device=None):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load checkpoint
-    add_safe_globals([_l.LabelEncoder])
+    # add_safe_globals([_l.LabelEncoder])
     checkpoint = torch.load(model_path, map_location=device, weights_only=False)
 
     # Create model with saved configuration
