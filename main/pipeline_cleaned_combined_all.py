@@ -550,7 +550,7 @@ class FakeNewsDataset(Dataset):
     """Dataset class for fake news classification."""
 
     def __init__(
-        self, texts, labels, preprocessor, max_sentences=20, max_words_per_sentence=50
+        self, texts, labels, preprocessor: TextPreprocessor, max_sentences=20, max_words_per_sentence=50
     ):
         self.texts = texts
         self.labels = labels
@@ -893,13 +893,13 @@ class FakeNewsAnalyzer:
     def _save_model_metadata(self, trainer):
         additional_data = {
             "label_encoder": self.label_encoder,
-            "vocab": self.preprocessor.vocab,  # Store the actual vocabulary dict
+            "word_to_idx": self.preprocessor.word_to_idx,  # Store the actual vocabulary dict
             "vocabulary_size": self.preprocessor.vocabulary_size,
             "number_of_classes": len(self.label_encoder.classes_),
             "training_results": self.training_results,
             "model_config": trainer.model_config,  # <-- Required to reinit model
-            "max_sent_len": self.preprocessor.max_sent_len,
-            "max_sent_num": self.preprocessor.max_sent_num,
+            "MAX_WORDS_PER_SENTENCE": MAX_WORDS_PER_SENTENCE,
+            "MAX_SENTENCES": MAX_SENTENCES,
             "highest_validation_accuracy": self.training_results["best_val_accuracy"],  # Optional
         }
 
