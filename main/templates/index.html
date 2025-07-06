@@ -2,122 +2,198 @@
 <html>
 <head>
   <style>
-    /* Base */
-    body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 100px;
-      background: #f7f9fb;
-      color: #333;
-    }
+/* Base Typography & Layout */
+body {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  margin: 0;
+  padding: 10px 10px;
+  background: #fdfdfd;
+  color: #2c2c2c;
+  line-height: 1.6;
+  font-size: 16px;
+}
 
-    /* Layout */
-    .container {
-      display: flex;
-      padding: 30px;
-    }
+/* Container Structure */
+.container {
+  display: flex;
+  padding: 40px;
 
-    /* Sidebar */
-    .sidebar {
-      width: 30%;
-      padding-right: 20px;
-      border-right: 1px solid #ddd;
-    }
+  margin: 0 auto;
+  background: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-    .sidebar h4 {
-      margin-bottom: 10px;
-      font-weight: 600;
-      font-size: 1.1em;
-    }
+/* Sidebar Navigation */
+/* ...existing code... */
+.sidebar {
+  width: 28%;
+  padding-right: 30px;
+  border-right: 2px solid #d5d5d5;
+  /* Add a fixed height and make it flex column */
+  display: flex;
+  flex-direction: column;
+  height: 80vh; /* Adjust as needed */
+}
 
-    #sampleList {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+#sampleList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  /* Make the list scrollable */
+  overflow-y: auto;
+  flex: 1 1 auto;
+  max-height: 100% /* Adjust as needed */
+}
+/* ...existing code... */
+.sidebar h4 {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 1.15em;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+}
 
-    #sampleList li {
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
 
-    #sampleList li:hover {
-      background: #eef2f5;
-    }
+#sampleList li {
+  padding: 12px 16px;
+  margin-bottom: 6px;
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95em;
+}
 
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      padding-left: 20px;
-    }
+#sampleList li:hover {
+  background: #f0f0f0;
+  border-color: #d0d0d0;
+  transform: translateX(2px);
+}
 
-    textarea {
-      width: 100%;
-      font-size: 1em;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      resize: vertical;
-      min-height: 120px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  padding-left: 35px;
+}
 
-    button {
-      background-color: #1f7ae0;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      font-size: 0.95em;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 15px;
-    }
+textarea {
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  padding: 16px;
+  border: 2px solid #d0d0d0;
+  border-radius: 3px;
+  resize: vertical;
+  min-height: 140px;
+  margin-bottom: 20px;
+  background: #fafafa;
+  line-height: 1.5;
+}
 
-    button:hover {
-      background-color: #155eb4;
-    }
+textarea:focus {
+  outline: none;
+  border-color: #4a4a4a;
+  background: white;
+}
 
-    /* Prediction Output */
-    #prediction {
-      font-weight: 600;
-      font-size: 1.1em;
-      color: #1f7ae0;
-      margin-bottom: 15px;
-    }
+button {
+  background-color: #2c2c2c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 0.9em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-bottom: 25px;
+}
 
-    /* Attention Visualization */
-    #visualization {
-      margin-top: 20px;
-    }
+button:hover {
+  background-color: #1a1a1a;
+}
 
-    .sentence {
-      margin: 10px 0;
-      padding: 8px 12px;
-      border-radius: 6px;
-      background: #fff3f3; /* fallback for sentence background */
-    }
+/* Results Section */
+#prediction {
+  font-weight: 700;
+  font-size: 1.2em;
+  color: #2c2c2c;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f8f8f8;
 
-    .word {
-      display: inline-block;
-      margin: 2px 4px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.95em;
-      background: #ffb3b3; /* fallback */
-      transition: background 0.2s;
-    }
+  font-family: 'Georgia', serif;
+}
+
+/* Attention Visualization */
+#visualization {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+}
+
+.sentence {
+  margin: 15px 0;
+  padding: 12px 16px;
+  border-radius: 3px;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.word {
+  display: inline-block;
+  margin: 2px 3px;
+  padding: 3px 7px;
+  border-radius: 2px;
+  font-size: 0.9em;
+  font-family: 'Georgia', serif;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.word:hover {
+  background: #e8e8e8;
+  border-color: #d0d0d0;
+}
+
+/* Academic Headers */
+h1, h2, h3 {
+  font-family: 'Georgia', serif;
+  color: #1a1a1a;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 1.8em;
+  font-weight: 700;
+  border-bottom: 2px solid #2c2c2c;
+  padding-bottom: 10px;
+}
+
+h2 {
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+}
   </style>
 </head>
 
 <body>
-  <h2>HAN Attention Visualizer</h2>
+  <h2 style="margin: auto;" >HAN Attention Visualizer</h2>
   <div class="container">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -157,6 +233,9 @@
               document.getElementById("inputText").value = item.text;
               document.getElementById("prediction").innerText = "";
               document.getElementById("visualization").innerHTML = "";
+              //trigger clasify
+              sendText();
+
             };
             list.appendChild(li);
           });
@@ -178,6 +257,7 @@
       })
       .then(res => res.json())
       .then(data => {
+ 
         document.getElementById("prediction").innerText = data.prediction;
         const viz = document.getElementById("visualization");
         viz.innerHTML = "";
