@@ -72,23 +72,12 @@ def predict():
 
 import json
 
+
 @app.route("/samples")
 def get_sample_texts():
-    with open("files/sample_texts.json", "r") as f:
+    with open("files/sample_texts.json", "r", encoding="utf-8") as f:
         samples = json.load(f)
     return jsonify(samples)
-
-@app.route("/tag", methods=["POST"])
-def tag_text():
-    data = request.get_json()
-    text_id = data.get("id")
-    tag = data.get("tag")
-
-    # Optional: Save to a local file
-    with open("tagged_data.json", "a") as f:
-        f.write(json.dumps({"id": text_id, "tag": tag}) + "\n")
-
-    return jsonify({"message": "Tag saved", "id": text_id, "tag": tag})
 
 
 if __name__ == "__main__":

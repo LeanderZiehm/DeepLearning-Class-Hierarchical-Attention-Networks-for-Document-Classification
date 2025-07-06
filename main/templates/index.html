@@ -1,281 +1,207 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        /* Base */
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 100px;
-  background: #f7f9fb;
-  color: #333;
-}
+  <style>
+    /* Base */
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 100px;
+      background: #f7f9fb;
+      color: #333;
+    }
 
-/* Layout */
-.container {
-  display: flex;
-  padding: 30px;
-}
+    /* Layout */
+    .container {
+      display: flex;
+      padding: 30px;
+    }
 
-/* Sidebar */
-.sidebar {
-  width: 30%;
-  padding-right: 20px;
-  border-right: 1px solid #ddd;
-}
+    /* Sidebar */
+    .sidebar {
+      width: 30%;
+      padding-right: 20px;
+      border-right: 1px solid #ddd;
+    }
 
-.sidebar h4 {
-  margin-bottom: 10px;
-  font-weight: 600;
-  font-size: 1.1em;
-}
+    .sidebar h4 {
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
 
-#sampleList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+    #sampleList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-#sampleList li {
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
+    #sampleList li {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
 
-#sampleList li:hover {
-  background: #eef2f5;
-}
+    #sampleList li:hover {
+      background: #eef2f5;
+    }
 
-/* Main Content */
-.main-content {
-  flex: 1;
-  padding-left: 20px;
-}
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding-left: 20px;
+    }
 
-textarea {
-  width: 100%;
-  font-size: 1em;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  resize: vertical;
-  min-height: 120px;
-  margin-bottom: 12px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
+    textarea {
+      width: 100%;
+      font-size: 1em;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      min-height: 120px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
 
-button {
-  background-color: #1f7ae0;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  font-size: 0.95em;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-right: 10px;
-}
+    button {
+      background-color: #1f7ae0;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 0.95em;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 15px;
+    }
 
-button:hover {
-  background-color: #155eb4;
-}
+    button:hover {
+      background-color: #155eb4;
+    }
 
-select {
-  padding: 6px 10px;
-  font-size: 0.95em;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: white;
-}
+    /* Prediction Output */
+    #prediction {
+      font-weight: 600;
+      font-size: 1.1em;
+      color: #1f7ae0;
+      margin-bottom: 15px;
+    }
 
-/* Prediction Output */
-#prediction {
-  font-weight: 600;
-  font-size: 1.1em;
-  color: #1f7ae0;
-}
+    /* Attention Visualization */
+    #visualization {
+      margin-top: 20px;
+    }
 
-/* Attention Visualization */
-#visualization {
-  margin-top: 20px;
-}
+    .sentence {
+      margin: 10px 0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: #fff3f3; /* fallback for sentence background */
+    }
 
-.sentence {
-  margin: 10px 0;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: #fff3f3; /* fallback for sentence background (will be overridden with RGBA) */
-}
-
-.word {
-  display: inline-block;
-  margin: 2px 4px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.95em;
-  background: #ffb3b3; /* fallback */
-  transition: background 0.2s;
-}
-
-    </style>
+    .word {
+      display: inline-block;
+      margin: 2px 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.95em;
+      background: #ffb3b3; /* fallback */
+      transition: background 0.2s;
+    }
+  </style>
 </head>
 
 <body>
   <h2>HAN Attention Visualizer</h2>
-
-  <div style="display: flex;">
-    <!-- Sidebar for sample texts -->
-    <div style="width: 30%; margin-right: 20px;">
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
       <h4>Sample Articles</h4>
       <ul id="sampleList"></ul>
     </div>
 
-    <!-- Main input & output -->
-    <div style="flex: 1;">
-      <textarea id="inputText" rows="10" cols="80"></textarea><br>
+    <!-- Main Content -->
+    <div class="main-content">
+      <textarea id="inputText" rows="10" cols="80" placeholder="Paste your article here..."></textarea><br>
       <button onclick="sendText()">Classify and Visualize</button>
       <h3>Prediction: <span id="prediction"></span></h3>
-      <div>
-        <label for="tagSelect">Tag:</label>
-        <select id="tagSelect">
-          <option value="">--Select a tag--</option>
-          <option value="wrong-prediction">Wrong Prediction</option>
-          <option value="correct-prediction">Correct Prediction</option>
-        </select>
-        <button onclick="submitTag()">Submit Tag</button>
-      </div>
       <div id="visualization"></div>
     </div>
   </div>
 
+  <script>
+    // Convert attention intensity to red color with opacity
+    function attentionColor(intensity) {
+      let alpha = intensity.toFixed(2);
+      return `rgba(255, 0, 0, ${alpha})`;
+    }
 
-</body>
-
-    <h2>HAN Attention Visualizer</h2>
-    <textarea id="inputText" rows="10" cols="80" placeholder="Paste your article here..."></textarea><br><br>
-    <button onclick="sendText()">Classify and Visualize</button>
-
-    <h3>Prediction: <span id="prediction"></span></h3>
-    <div id="visualization"></div>
-
-    <script>
-        function attentionColor(intensity) {
-            let alpha = intensity.toFixed(2);
-            return `rgba(255, 0, 0, ${alpha})`;  // Red with variable alpha
-        }
-
-        function sendText() {
-            const text = document.getElementById("inputText").value;
-            fetch("/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text })
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("prediction").innerText = data.prediction;
-                const viz = document.getElementById("visualization");
-                viz.innerHTML = "";
-
-                data.sentences.forEach((words, i) => {
-                    const sentenceDiv = document.createElement("div");
-                    sentenceDiv.className = "sentence";
-                    sentenceDiv.style.backgroundColor = attentionColor(data.sentence_attentions[i]);
-
-                    words.forEach((word, j) => {
-                        const wordSpan = document.createElement("span");
-                        wordSpan.className = "word";
-                        wordSpan.textContent = word;
-                        wordSpan.style.backgroundColor = attentionColor(data.word_attentions[i][j]);
-                        sentenceDiv.appendChild(wordSpan);
-                    });
-
-                    viz.appendChild(sentenceDiv);
-                });
-            });
-        }
-
-    let currentTextId = null;
-
-function attentionColor(intensity) {
-    let alpha = intensity.toFixed(2);
-    return `rgba(255, 0, 0, ${alpha})`;
-}
-
-function loadSamples() {
-    fetch("/samples")
+    // Load samples from backend and list them
+    function loadSamples() {
+      fetch("/samples")
         .then(res => res.json())
         .then(data => {
-            const list = document.getElementById("sampleList");
-            list.innerHTML = "";
-            data.forEach(item => {
-                const li = document.createElement("li");
-                li.innerHTML = `<strong>${item.title}</strong>`;
-                li.style.cursor = "pointer";
-                li.onclick = () => {
-                    document.getElementById("inputText").value = item.text;
-                    currentTextId = item.id;
-                };
-                list.appendChild(li);
-            });
+          const list = document.getElementById("sampleList");
+          list.innerHTML = "";
+          data.forEach((item, index) => {
+            const li = document.createElement("li");
+            // Use index+1 for numbering since your sample JSON doesn't have id
+            li.innerHTML = `<strong>#${index + 1}</strong> – 
+                            <em>Pred: ${item.predicted_label}, Actual: ${item.label}</em>`;
+            li.onclick = () => {
+              document.getElementById("inputText").value = item.text;
+              document.getElementById("prediction").innerText = "";
+              document.getElementById("visualization").innerHTML = "";
+            };
+            list.appendChild(li);
+          });
         });
-}
+    }
 
-function sendText() {
-    const text = document.getElementById("inputText").value;
-    fetch("/predict", {
+    // Send text to backend to classify and get attention info
+    function sendText() {
+      const text = document.getElementById("inputText").value.trim();
+      if (!text) {
+        alert("Please enter or select some text first.");
+        return;
+      }
+
+      fetch("/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: text })
-    })
-    .then(res => res.json())
-    .then(data => {
+      })
+      .then(res => res.json())
+      .then(data => {
         document.getElementById("prediction").innerText = data.prediction;
         const viz = document.getElementById("visualization");
         viz.innerHTML = "";
 
         data.sentences.forEach((words, i) => {
-            const sentenceDiv = document.createElement("div");
-            sentenceDiv.className = "sentence";
-            sentenceDiv.style.backgroundColor = attentionColor(data.sentence_attentions[i]);
+          const sentenceDiv = document.createElement("div");
+          sentenceDiv.className = "sentence";
+          sentenceDiv.style.backgroundColor = attentionColor(data.sentence_attentions[i]);
 
-            words.forEach((word, j) => {
-                const wordSpan = document.createElement("span");
-                wordSpan.className = "word";
-                wordSpan.textContent = word;
-                wordSpan.style.backgroundColor = attentionColor(data.word_attentions[i][j]);
-                sentenceDiv.appendChild(wordSpan);
-            });
+          words.forEach((word, j) => {
+            const wordSpan = document.createElement("span");
+            wordSpan.className = "word";
+            wordSpan.textContent = word;
+            wordSpan.style.backgroundColor = attentionColor(data.word_attentions[i][j]);
+            sentenceDiv.appendChild(wordSpan);
+          });
 
-            viz.appendChild(sentenceDiv);
+          viz.appendChild(sentenceDiv);
         });
-    });
-}
-
-function submitTag() {
-    const tag = document.getElementById("tagSelect").value;
-    if (!currentTextId || !tag) {
-        alert("Please select a sample and a tag first.");
-        return;
+      })
+      .catch(() => alert("Error during prediction. Please try again."));
     }
 
-    fetch("/tag", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: currentTextId, tag: tag })
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(`Tagged "${data.id}" as "${data.tag}"`);
-    });
-}
-
-window.onload = loadSamples;
-
-    </script>
+    window.onload = loadSamples;
+  </script>
 </body>
 </html>
