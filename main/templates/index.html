@@ -419,6 +419,10 @@ const prediction_as_text = (data.prediction == 1) ? "true" : "fake";
         wordSpan.className = "word";
         wordSpan.textContent = word;
         wordSpan.style.backgroundColor = attentionColor(data.word_attentions[i][j]);
+      //  console.log(word,data.word_attentions[i][j])
+      //  does this sum to 1? 
+        const sum = data.word_attentions[i].reduce((a, b) => a + b, 0);
+        console.log(`Sum of attentions for sentence ${i}:`, sum);
         sentenceDiv.appendChild(wordSpan);
       });
 

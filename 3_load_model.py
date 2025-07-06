@@ -1,8 +1,12 @@
 import torch
 from main.han_model import HierarchicalAttentionNetwork
 
-MODEL_SAVE_PATH = "data/new_best_han_model.pth"
-VOCAB_PATH = "data/new_vocabulary2.pkl"
+# MODEL_SAVE_PATH = "data/new_best_han_model.pth"
+# VOCAB_PATH = "data/new_vocabulary2.pkl"
+
+MODEL_SAVE_PATH = "main/files/han_model2025-07-06_01-13-47.pth"
+# VOCAB_PATH = "files/vocabulary_2025-07-06_01-13-47.pkl"
+
 
 def load_trained_model(model_path,device=None):
     """
